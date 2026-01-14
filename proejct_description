@@ -1,0 +1,9 @@
+DSA Semester Project 
+
+
+##Ride-Sharing Dispatch & Trip Management System 
+
+"This project focuses on designing and implementing an in-memory ride-sharing system 
+similar to popular platforms such as Uber or Careem. While the problem domain is familiar, 
+the internal implementation requires advanced data structures, careful state management, 
+and rollback handling." 
