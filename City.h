@@ -10,3 +10,16 @@ City::City(int initialCapacity) {
         nodes[i].edges = nullptr;
     }
 }
+
+City::~City() {
+    for (int i = 0; i < nodeCount; i++) {
+        Edge* current = nodes[i].edges;
+        while (current != nullptr) {
+            Edge* temp = current;
+            current = current->next;
+            delete temp;
+        }
+    }
+    delete[] nodes;
+}
+
