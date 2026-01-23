@@ -1,9 +1,52 @@
-DSA Semester Project 
+# Ride-Sharing Dispatch & Trip Management System
 
+A comprehensive in-memory ride-sharing system implementation using advanced data structures and algorithms, similar to platforms like Uber or Careem.
 
-##Ride-Sharing Dispatch & Trip Management System 
+## Project Overview
 
-"This project focuses on designing and implementing an in-memory ride-sharing system 
-similar to popular platforms such as Uber or Careem. While the problem domain is familiar, 
-the internal implementation requires advanced data structures, careful state management, 
-and rollback handling." 
+This system simulates a complete ride-sharing service with zone-based city partitioning, intelligent driver dispatch, trip lifecycle management, and rollback capabilities. The implementation focuses on custom data structures without relying on STL containers for core functionality.
+
+## Features
+
+### Core Functionality
+
+- **Zone-Based City Graph**: City represented as a weighted graph with zones for efficient driver assignment
+- **Shortest Path Routing**: Dijkstra's algorithm implementation for optimal route calculation
+- **Smart Driver Dispatch**: Zone-aware driver assignment with cross-zone penalty
+- **Trip Lifecycle Management**: Complete state machine for trip progression
+- **Rollback System**: Undo operations with full state restoration
+- **Analytics Engine**: Real-time trip statistics and driver utilization metrics
+
+### Trip States
+
+Trips progress through the following states:
+- `REQUESTED` → `ASSIGNED` → `ONGOING` → `COMPLETED`
+- `REQUESTED` → `CANCELLED`
+- `ASSIGNED` → `CANCELLED`
+
+## Architecture
+
+### File Structure
+
+RideShareSystem/
+├── include/                         # Header files
+│   ├── City.h
+│   ├── Driver.h
+│   ├── Rider.h
+│   ├── Trip.h
+│   ├── DispatchEngine.h
+│   ├── RollbackManager.h
+│   └── RideShareSystem.h
+│
+├── src/                             # Source files
+│   ├── City.cpp
+│   ├── Driver.cpp
+│   ├── Rider.cpp
+│   ├── Trip.cpp
+│   ├── DispatchEngine.cpp
+│   ├── RollbackManager.cpp
+│   └── RideShareSystem.cpp
+│
+├── main.cpp                         # Entry point (tests & demo)
+└── README.md
+
