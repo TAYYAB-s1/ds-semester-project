@@ -50,3 +50,33 @@ RideShareSystem/
 ├── main.cpp                         # Entry point (tests & demo)
 └── README.md
 
+### Key Components
+
+**City Graph**
+- Custom adjacency list implementation
+- Nodes represent locations with zone assignments
+- Weighted edges represent roads with distances
+- Dijkstra's algorithm for shortest path calculation
+
+**Dispatch Engine**
+- Zone-based driver selection
+- Cross-zone penalty mechanism (50 distance units)
+- Proximity-based driver matching
+
+**Rollback Manager**
+- Stack-based operation history
+- Supports undoing multiple operations
+- Restores driver availability and trip states
+
+**Trip Management**
+- Enforced state transitions
+- Complete trip lifecycle tracking
+- Cancellation handling at any valid state
+
+## Data Structures Used
+
+- **Custom Adjacency List**: For graph representation
+- **Dynamic Arrays**: Resizable containers for drivers and trips
+- **Linked List**: For operation history in rollback manager
+- **State Machine**: For trip lifecycle management
+
