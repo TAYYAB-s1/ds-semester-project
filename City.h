@@ -99,4 +99,28 @@ int* City::dijkstra(int start) {
     return distances;
 }
 
+int City::findShortestPath(int from, int to) {
+    int* distances = dijkstra(from);
+    int result = distances[to];
+    delete[] distances;
+    return result;
+}
+
+int City::getNodeZone(int nodeId) {
+    if (nodeId >= 0 && nodeId < nodeCount) {
+        return nodes[nodeId].zone;
+    }
+    return -1;
+}
+
+int City::getNodeCount() {
+    return nodeCount;
+}
+
+Node* City::getNode(int index) {
+    if (index >= 0 && index < nodeCount) {
+        return &nodes[index];
+    }
+    return nullptr;
+}
 
