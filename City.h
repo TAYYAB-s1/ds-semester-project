@@ -58,4 +58,45 @@ void City::addEdge(int from, int to, int distance) {
     newEdge->next = nodes[from].edges;
     nodes[from].edges = newEdge;
 }
+int* City::dijkstra(int start) {
+    int* distances = new int[nodeCount];
+    bool* visited = new bool[nodeCount];
+    
+    for (int i = 0; i < nodeCount; i++) {
+        distances[i] = 2147483647;
+        visited[i] = false;
+    }
+    
+    distances[start] = 0;
+    
+    for (int count = 0; count < nodeCount - 1; count++) {
+        int minDist = 2147483647;
+        int minIndex = -1;
+        
+        for (int v = 0; v < nodeCount; v++) {
+            if (!visited[v] && distances[v] < minDist) {
+                minDist = distances[v];
+                minIndex = v;
+            }
+        }
+        
+        if (minIndex == -1) break;
+        
+        visited[minIndex] = true;
+        
+        Edge* edge = nodes[minIndex].edges;
+        while (edge != nullptr) {
+            int v = edge->destination;
+            if (!visited[v] && distances[minIndex] != 2147483647 &&
+                distances[minIndex] + edge->distance < distances[v]) {
+                distances[v] = distances[minIndex] + edge->distance;
+            }
+            edge = edge->next;
+        }
+    }
+    
+    delete[] visited;
+    return distances;
+}
+
 
