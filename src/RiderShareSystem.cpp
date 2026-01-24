@@ -53,3 +53,50 @@ void RideShareSystem::initializeCity() {
     city->addEdge(13, 14, 9);
     city->addEdge(14, 13, 9);
 }
+void RideShareSystem::resizeTrips() {
+    int newCapacity = tripCapacity * 2;
+    Trip* newTrips = new Trip[newCapacity];
+    
+    for (int i = 0; i < tripCount; i++) {
+        newTrips[i] = trips[i];
+    }
+    
+    delete[] trips;
+    trips = newTrips;
+    tripCapacity = newCapacity;
+}
+
+void RideShareSystem::addDriver(Driver driver) {
+    dispatch->addDriver(driver);
+}
+
+int RideShareSystem::requestTrip(Rider rider) {
+    if (tripCount >= tripCapacity) {
+        resizeTrips();
+    }
+    
+    int distance = city->findShortestPath(rider.getPickupLocation(), rider.getDropoffLocation());
+    Trip newTrip(nextTripId, rider.getId(), rider.getPickupLocation(), rider.getDropoffLocation(), distance);
+    
+    trips[tripCount] = newTrip;
+    tripCount++;
+    
+    Operation op;
+    op.type = "REQUEST";
+    op.tripId = nextTripId;
+    op.driverId = -1;
+    op.previousState = REQUESTED;
+    rollback->recordOperation(op);
+    
+    nextTripId++;
+    return nextTripId - 1;
+}
+
+Trip* RideShareSystem::findTrip(int tripId) {
+    for (int i = 0; i < tripCount; i++) {
+        if (trips[i].getId() == tripId) {
+            return &trips[i];
+        }
+    }
+    return nullptr;
+}
