@@ -1,0 +1,556 @@
+# 🎓 Ride-Sharing Dispatch & Trip Management System  
+## Viva Explanation Guide
+
+---
+
+## 1️⃣ Project Overview (How to Start in Viva)
+
+> **“Our project is an in-memory Ride-Sharing Dispatch & Trip Management System similar to Uber or Careem.  
+It focuses on efficient driver dispatch, trip lifecycle management, shortest path routing using graphs, and a rollback mechanism for undoing operations.”**
+
+This project is **DSA-oriented**, not UI-based, and emphasizes:
+
+- Graphs  
+- State machines  
+- Custom data structures  
+- Rollback logic  
+
+---
+
+## 2️⃣ How Two Students Structured the Project 👥
+
+
+Both students collaborated on design decisions and testing.
+
+---
+
+## 3️⃣ Project Folder Structure (VERY Important for Viva)
+```
+RideShareSystem/
+│
+├── include/ → Declarations (WHAT classes do)
+│ ├── City.h
+│ ├── Driver.h
+│ ├── Rider.h
+│ ├── Trip.h
+│ ├── DispatchEngine.h
+│ ├── RollbackManager.h
+│ └── RideShareSystem.h
+│
+├── src/ → Implementations (HOW they work)
+│ ├── City.cpp
+│ ├── Driver.cpp
+│ ├── Rider.cpp
+│ ├── Trip.cpp
+│ ├── DispatchEngine.cpp
+│ ├── RollbackManager.cpp
+│ └── RideShareSystem.cpp
+│
+└── main.cpp → Entry point & test cases
+```
+
+### 🔑 Key Design Rule
+- **Header files** → only declarations  
+- **Source files** → logic & algorithms  
+- **main.cpp** → uses system functions only (no heavy logic)
+
+✔ Follows **OOP principles**  
+✔ Ensures **modularity and maintainability**
+
+---
+
+## 4️⃣ Core Components Explained (Viva Gold ⭐)
+
+---
+
+### 🚦 1. City (Graph Representation)
+
+**Purpose:**  
+Represents the city as a **weighted graph**.
+
+- Nodes → locations  
+- Edges → roads with distances  
+- Zones → group nearby locations  
+
+**Algorithm Used:**  
+👉 **Dijkstra’s Algorithm**
+
+- Finds shortest path between pickup & drop-off  
+- Time Complexity: **O(V²)** (custom implementation, no STL)
+
+📌 Ensures **optimal routing for trips**
+
+---
+
+### 🚗 2. Driver Class
+
+Stores:
+- Driver ID & name
+- Current location
+- Availability status
+- Zone information
+
+Driver availability:
+- ❌ Unavailable when assigned
+- ✅ Available after completion or cancellation
+
+---
+
+### 🧍 3. Rider Class
+
+Stores:
+- Rider ID & name
+- Pickup location
+- Drop-off location
+
+📌 Used to create trip requests
+
+---
+
+### 🧾 4. Trip Class (State Machine)
+
+One of the **most important components**.
+
+#### Trip States:
+```
+REQUESTED → ASSIGNED → ONGOING → COMPLETED
+REQUESTED → CANCELLED
+ASSIGNED → CANCELLED
+```
+
+
+✔ Invalid transitions are blocked  
+✔ State machine ensures **data integrity**
+
+**Example:**  
+You cannot complete a trip before starting it.
+
+---
+
+### 🧠 5. DispatchEngine (Smart Driver Assignment)
+
+**Driver selection logic:**
+1. Prefer same-zone drivers
+2. Calculate distance using shortest path
+3. Apply cross-zone penalty (+50 units) if required
+4. Choose the closest available driver
+
+📌 Simulates **real ride-sharing dispatch behavior**
+
+---
+
+### 🔁 6. RollbackManager (Undo System)
+
+**Why rollback is needed:**
+- Undo assignments, cancellations, or completions
+- Useful for testing and error recovery
+
+**Implementation:**
+- Stack-based (LIFO)
+
+Each operation stores:
+- Previous trip state
+- Driver availability
+
+**Undo restores:**
+- Trip state
+- Driver status
+
+📌 Demonstrates **advanced DSA beyond CRUD**
+
+---
+
+### 🧩 7. RideShareSystem (Controller Class)
+
+The **central manager** of the system.
+
+Responsibilities:
+- Connects all components
+- Exposes clean system-level functions:
+  - `requestTrip()`
+  - `assignDriver()`
+  - `startTrip()`
+  - `completeTrip()`
+  - `cancelTrip()`
+  - `rollback()`
+
+📌 `main.cpp` never directly manipulates objects
+
+---
+
+## 5️⃣ main.cpp – How the System Runs 🧪
+
+`main.cpp` acts as:
+- System tester
+- Viva demonstration
+
+### Typical Flow:
+```cpp
+RideShareSystem system;
+system.initializeCity();
+
+system.addDriver(driver);
+int tripId = system.requestTrip(rider);
+
+system.assignDriver(tripId);
+system.startTrip(tripId);
+system.completeTrip(tripId);
+
+It also:
+
+Tests cancellations
+
+Tests rollback functionality
+
+Displays analytics & trip history
+
+6️⃣ Analytics Engine 📊
+
+Provides:
+
+Total trips
+
+Completed trips
+
+Cancelled trips
+
+Average trip distance
+
+Driver utilization
+
+Time Complexity:
+
+O(T) where T = number of trips
+
+7️⃣ Key Design Decisions (Examiner Loves This)
+
+✔ Zone-based dispatch → efficiency
+✔ Cross-zone penalty → realistic behavior
+✔ State machine → prevents invalid operations
+✔ Rollback mechanism → advanced feature
+✔ No STL for core logic → strong DSA focus
+✔ Modular OOP design → scalable & maintainable
+
+
+---
+
+9️⃣ One-Line Viva Summary (Memorize This)
+
+“Our project simulates a real ride-sharing system using graphs, state machines, and rollback mechanisms, implemented with custom data structures and clean object-oriented design.”
+
+
+```
+
+### CODE EXPLAINATION 
+
+# 📍 City Module Explanation (Beginner Friendly)
+
+## Overview
+
+The **City module** represents the **map of the city** in our Ride-Sharing system.  
+It is implemented as a **weighted graph** where:
+
+- **Nodes** → locations in the city  
+- **Edges** → roads between locations  
+- **Edge weight** → distance between locations  
+
+This module is responsible for:
+- Storing city locations
+- Connecting locations with distances
+- Calculating the **shortest path** between two locations using **Dijkstra’s Algorithm**
+
+This information is later used by the **DispatchEngine** to assign the nearest driver.
+
+---
+
+## Why We Need the City Class
+
+In a ride-sharing system:
+- Drivers and riders are at different locations
+- We must calculate the **shortest distance** between them
+- A graph is the best data structure for this problem
+
+📌 **STL is not used**, so we implemented everything using:
+- Dynamic arrays
+- Linked lists
+
+---
+
+# 🧱 City.h (Header File Explanation)
+
+The header file defines:
+- Structures
+- Class declaration
+- Function prototypes
+
+It tells **WHAT** the City class can do.
+
+---
+
+## 1️⃣ Header Guards
+
+```cpp
+#ifndef CITY_H
+#define CITY_H
+```       
+These prevent the header file from being included multiple times, which avoids compilation errors.
+
+2️⃣ Edge Structure (Road Representation)
+struct Edge {
+    int destination;
+    int distance;
+    Edge* next;
+};
+
+Explanation:
+
+Represents a road from one location to another
+
+destination → index of the connected node
+
+distance → length of the road
+
+next → pointer to the next road (linked list)
+
+📌 Multiple edges are connected using a linked list, forming an adjacency list.
+
+3️⃣ Node Structure (Location Representation)
+struct Node {
+    int id;
+    string name;
+    int zone;
+    Edge* edges;
+};
+
+Explanation:
+
+id → unique identifier for the location
+
+name → name of the location
+
+zone → zone number (used for driver dispatch)
+
+edges → pointer to first connected road
+
+Each node stores all its roads in a linked list.
+
+4️⃣ City Class Declaration
+class City {
+
+
+This class manages the entire city graph.
+
+5️⃣ Private Data Members
+Node* nodes;
+int nodeCount;
+int capacity;
+
+Explanation:
+
+nodes → dynamic array of city locations
+
+nodeCount → current number of locations
+
+capacity → maximum size of the array
+
+This allows the city to grow dynamically.
+
+6️⃣ Private Helper Functions
+void resize();
+int* dijkstra(int start);
+
+Explanation:
+
+resize() → increases array size when full
+
+dijkstra() → calculates shortest path from one node to all others
+
+These are private because they are internal logic.
+
+7️⃣ Public Member Functions
+void addNode(int id, string name, int zone);
+void addEdge(int from, int to, int distance);
+int findShortestPath(int from, int to);
+int getNodeZone(int nodeId);
+int getNodeCount();
+Node* getNode(int index);
+
+Explanation:
+
+Add locations and roads
+
+Find shortest distance
+
+Access node and zone information
+
+⚙️ City.cpp (Implementation Explanation)
+
+The .cpp file defines HOW everything works.
+
+8️⃣ City Constructor
+City::City(int initialCapacity)
+
+What happens:
+
+Allocates memory for nodes
+
+Sets initial capacity
+
+Initializes all edge pointers to nullptr
+
+## 📌 Prevents garbage values and memory issues.
+
+9️⃣ City Destructor
+City::~City()
+
+Why needed?
+
+Frees all dynamically allocated memory
+
+Deletes linked lists of edges
+
+Deletes node array
+
+## 📌 Prevents memory leaks.
+
+🔟 resize() Function
+void City::resize()
+
+Purpose:
+
+Doubles the size of the node array when full
+
+Steps:
+
+Create a new larger array
+
+Copy old nodes
+
+Initialize remaining space
+
+Delete old array
+
+## 📌 Ensures dynamic growth of the city.
+
+1️⃣1️⃣ addNode() Function
+void City::addNode(int id, string name, int zone)
+
+What it does:
+
+Checks if resize is needed
+
+Adds a new node
+
+Initializes its edge list
+
+📌 Time Complexity: O(1) (amortized)
+
+1️⃣2️⃣ addEdge() Function
+void City::addEdge(int from, int to, int distance)
+
+Explanation:
+
+Creates a new Edge
+
+Inserts it at the beginning of the edge list
+
+Represents a directed weighted edge
+
+## 📌 Efficient insertion using linked list.
+
+1️⃣3️⃣ Dijkstra’s Algorithm Implementation
+int* City::dijkstra(int start)
+
+Step-by-Step:
+
+Create distance and visited arrays
+
+Initialize distances to infinity
+
+Mark start node distance as 0
+
+Repeatedly select closest unvisited node
+
+Relax edges (update distances)
+
+## 📌 Custom implementation without STL.
+
+Complexity:
+
+Time: O(V²)
+
+Space: O(V)
+
+## 1️⃣4️⃣ findShortestPath()
+int City::findShortestPath(int from, int to)
+
+Explanation:
+
+Calls Dijkstra internally
+
+Returns distance between two nodes
+
+Frees memory safely
+
+### 📌 Other classes don’t need to know algorithm details.
+
+## 1️⃣5️⃣ Utility Functions
+getNodeZone()
+
+Returns the zone of a location.
+
+getNodeCount()
+
+Returns total number of locations.
+
+getNode()
+
+Returns pointer to a node.
+
+Used by:
+
+DispatchEngine
+
+Analytics
+
+System controller
+
+## 🔗 How City Connects with the System
+
+DispatchEngine uses City to calculate driver distances
+
+Zone information improves driver selection
+
+Trip distance is computed using shortest path
+
+📌 City is the foundation of smart dispatch.
+
+## ✅ Beginner One-Line Summary
+
+“The City class models the city as a graph using custom data structures and calculates shortest routes using Dijkstra’s algorithm to support intelligent driver dispatch.”
+
+🎤 Common Viva Questions (Beginner)
+
+Q: Why use a graph?
+A: Roads and locations naturally form a graph.
+
+Q: Why adjacency list?
+A: Saves memory for sparse graphs.
+
+Q: Why no STL?
+A: Project requirement to demonstrate DSA skills.
+
+## ✔ Conclusion
+
+The City module:
+
+Implements a real-world city map
+
+Uses core DSA concepts
+
+Provides essential routing logic
+
+Supports intelligent ride-sharing decisions
+
+
+```
