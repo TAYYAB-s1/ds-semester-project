@@ -66,6 +66,76 @@ cout << "\nTest 11: Analytics correctness" << endl;
     
     cout << "\n========== ALL TESTS COMPLETED ==========" << endl;
 }
+nt main() {
+    RideShareSystem system;
+
+    runTests(system);
+
+    cout << "\n\n========== INTERACTIVE MODE ==========\n";
+
+    RideShareSystem demo;
+    demo.initializeCity();
+
+    int choice;
+    bool running = true;
+
+    while (running) {
+        cout << "\n------ Ride Sharing Menu ------\n";
+        cout << "1. Add Driver\n";
+        cout << "2. Request Trip\n";
+        cout << "3. Assign Driver\n";
+        cout << "4. Start Trip\n";
+        cout << "5. Complete Trip\n";
+        cout << "6. Cancel Trip\n";
+        cout << "7. Show Trip History\n";
+        cout << "8. Show Analytics\n";
+        cout << "9. Rollback Operations\n";
+        cout << "0. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1: {
+            int id, location;
+            string name;
+            cout << "Driver ID: ";
+            cin >> id;
+            cout << "Driver Name: ";
+            cin.ignore();
+            getline(cin, name);
+            cout << "Driver Location: ";
+            cin.ignore();
+            cin >> location;
+            demo.addDriver(Driver(id, name, location));
+            cout << "Driver added successfully.\n";
+            break;
+        }
+
+        case 2: {
+            int id, start, end;
+            string name;
+            cout << "Rider ID: ";
+            cin >> id;
+            cout << "Rider Name: ";
+            cin.ignore();
+            getline(cin, name);
+            cout << "Start Location: ";
+            cin.ignore();
+            cin >> start;
+            cout << "End Location: ";
+            cin >> end;
+            int tripId = demo.requestTrip(Rider(id, name, start, end));
+            cout << "Trip requested. Trip ID = " << tripId << endl;
+            break;
+        }
+
+        case 3: {
+            int tripId;
+            cout << "Enter Trip ID: ";
+            cin >> tripId;
+            cout << (demo.assignDriver(tripId) ? "Driver Assigned\n" : "Assignment Failed\n");
+            break;
+        }
 
     
 
