@@ -552,5 +552,323 @@ Provides essential routing logic
 
 Supports intelligent ride-sharing decisions
 
+Great 👍
+Now I’ll explain **`Driver.h` and `Driver.cpp`** in a **very beginner-friendly**, **viva-oriented**, and **clean Markdown format**, just like we did for **City**.
+You can directly paste this into your **documentation / README / report**.
 
+---
+
+````markdown
+# 🚗 Driver Module Explanation (Beginner Friendly)
+
+## Overview
+
+The **Driver module** represents a **driver** in the Ride-Sharing Dispatch & Trip Management System.  
+Each driver has an identity, a current location, and an availability status.
+
+This class is mainly used by:
+- **DispatchEngine** → to select a suitable driver
+- **Trip** → to assign and release drivers
+- **RideShareSystem** → to manage drivers centrally
+
+📌 The Driver class is kept **simple and focused** to follow good OOP principles.
+
+---
+
+## Why We Need a Driver Class
+
+In a ride-sharing system:
+- Drivers can be **free or busy**
+- Drivers have a **current location**
+- Drivers are assigned to trips and later released
+
+The Driver class stores and manages all this information in one place.
+
+---
+
+# 🧱 Driver.h (Header File Explanation)
+
+The header file defines:
+- Driver data members
+- Public functions to access and update driver information
+
+It describes **WHAT a Driver is and WHAT it can do**.
+
+---
+
+## 1️⃣ Header Guards
+
+```cpp
+#ifndef DRIVER_H
+#define DRIVER_H
+````
+
+These prevent multiple inclusion of the same header file, avoiding compilation errors.
+
+---
+
+## 2️⃣ Included Libraries
+
+```cpp
+#include <string>
 ```
+
+* Used to store the driver’s name
+* `string` is allowed since it does not affect core DSA logic
+
+---
+
+## 3️⃣ Driver Class Declaration
+
+```cpp
+class Driver {
+```
+
+This class models a **real-world driver** in the system.
+
+---
+
+## 4️⃣ Private Data Members
+
+```cpp
+private:
+    int id;
+    string name;
+    int currentLocation;
+    bool available;
+```
+
+### Explanation of Each Variable:
+
+* `id`
+  → Unique identifier for the driver
+
+* `name`
+  → Driver’s name (for identification)
+
+* `currentLocation`
+  → Node ID of the city where the driver is currently located
+
+* `available`
+  → Indicates whether the driver is free or already assigned to a trip
+
+📌 These variables are **private** to protect data and ensure controlled access.
+
+---
+
+## 5️⃣ Constructors
+
+```cpp
+Driver();
+Driver(int driverId, string driverName, int location);
+```
+
+### Purpose:
+
+* Initialize driver objects
+* Allow creation of both empty and fully-initialized drivers
+
+---
+
+## 6️⃣ Getter Functions
+
+```cpp
+int getId();
+string getName();
+int getCurrentLocation();
+bool isAvailable();
+```
+
+### Why getters?
+
+* Provide **read-only access** to private data
+* Maintain encapsulation
+
+---
+
+## 7️⃣ Setter Functions
+
+```cpp
+void setAvailable(bool status);
+void setLocation(int location);
+```
+
+### Purpose:
+
+* Update driver availability when trips start/end
+* Update location after trip completion
+
+---
+
+# ⚙️ Driver.cpp (Implementation Explanation)
+
+The `.cpp` file defines **HOW** the Driver class functions work.
+
+---
+
+## 8️⃣ Default Constructor
+
+```cpp
+Driver::Driver() {
+    id = -1;
+    name = "";
+    currentLocation = -1;
+    available = true;
+}
+```
+
+### Explanation:
+
+* Initializes driver with default values
+* `-1` indicates an invalid or unassigned state
+* Driver is marked **available by default**
+
+📌 Useful when creating arrays or placeholders.
+
+---
+
+## 9️⃣ Parameterized Constructor
+
+```cpp
+Driver::Driver(int driverId, string driverName, int location)
+```
+
+### Explanation:
+
+* Assigns meaningful values to the driver
+* Sets driver as available initially
+
+📌 Used when adding real drivers to the system.
+
+---
+
+## 🔟 Getter Function Implementations
+
+### getId()
+
+```cpp
+int Driver::getId() {
+    return id;
+}
+```
+
+Returns the driver’s unique ID.
+
+---
+
+### getName()
+
+```cpp
+string Driver::getName() {
+    return name;
+}
+```
+
+Returns the driver’s name.
+
+---
+
+### getCurrentLocation()
+
+```cpp
+int Driver::getCurrentLocation() {
+    return currentLocation;
+}
+```
+
+Returns the current city node of the driver.
+
+---
+
+### isAvailable()
+
+```cpp
+bool Driver::isAvailable() {
+    return available;
+}
+```
+
+Checks whether the driver is free or busy.
+
+📌 Very important for dispatch logic.
+
+---
+
+## 1️⃣1️⃣ Setter Function Implementations
+
+### setAvailable()
+
+```cpp
+void Driver::setAvailable(bool status) {
+    available = status;
+}
+```
+
+### Explanation:
+
+* Marks driver as busy when assigned
+* Marks driver as free when trip ends or is cancelled
+
+---
+
+### setLocation()
+
+```cpp
+void Driver::setLocation(int location) {
+    currentLocation = location;
+}
+```
+
+### Explanation:
+
+* Updates driver’s location after trip completion
+* Keeps system data accurate
+
+---
+
+## 🔗 How Driver Connects With Other Modules
+
+* **DispatchEngine**
+  → Checks `isAvailable()` and `getCurrentLocation()`
+
+* **Trip**
+  → Changes driver availability
+
+* **RideShareSystem**
+  → Manages list of all drivers
+
+📌 Driver acts as a **data model** used across the system.
+
+---
+
+## ✅ Beginner One-Line Summary
+
+> **“The Driver class stores driver information such as ID, location, and availability, allowing the system to assign and manage drivers efficiently.”**
+
+---
+
+## 🎤 Common Viva Questions (Driver Module)
+
+**Q: Why is availability stored as a boolean?**
+A: Because a driver can only be free or busy.
+
+**Q: Why are variables private?**
+A: To protect data and follow encapsulation.
+
+**Q: Who updates driver availability?**
+A: Trip and RideShareSystem through setter functions.
+
+---
+
+## ✔ Conclusion
+
+The Driver module:
+
+* Represents real-world drivers
+* Supports intelligent dispatch
+* Follows OOP principles
+* Keeps the system simple and maintainable
+
+
+
+
