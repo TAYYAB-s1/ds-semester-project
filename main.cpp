@@ -57,5 +57,15 @@ void runTests(RideShareSystem& system) {
     cout << "\nTest 10: Multiple trip rollbacks" << endl;
     system.rollbackOperations(2);
     cout << "Rolled back 2 operations" << endl;
+
+cout << "\nTest 11: Analytics correctness" << endl;
+    system.displayAnalytics();
+    
+    cout << "\nTest 12: Trip history display" << endl;
+    system.displayTripHistory();
+    
+    cout << "\n========== ALL TESTS COMPLETED ==========" << endl;
+}
+
     
 
