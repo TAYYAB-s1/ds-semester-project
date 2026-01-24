@@ -870,5 +870,270 @@ The Driver module:
 * Keeps the system simple and maintainable
 
 
+Nice 👍
+Now we move to **Rider.h & Rider.cpp**.
+Below is a **proper beginner-friendly, viva-ready Markdown explanation**, matching the style of **City** and **Driver** so your documentation stays consistent.
+
+---
+
+````markdown
+# 🧍 Rider Module Explanation (Beginner Friendly)
+
+## Overview
+
+The **Rider module** represents a **customer (user)** who requests a ride in the Ride-Sharing Dispatch & Trip Management System.
+
+A rider:
+- Requests a trip
+- Has a pickup location
+- Has a drop-off location
+
+The Rider class is mainly used to **create trip requests** and provide location data for routing and driver assignment.
+
+---
+
+## Why We Need a Rider Class
+
+In a ride-sharing system:
+- Every trip is initiated by a rider
+- The system must know **where the rider is** and **where they want to go**
+- Rider information should be stored separately from drivers
+
+The Rider class cleanly encapsulates all rider-related data.
+
+---
+
+# 🧱 Rider.h (Header File Explanation)
+
+The header file defines:
+- Rider data members
+- Public functions to access rider information
+
+It describes **WHAT a Rider is and WHAT it can do**.
+
+---
+
+## 1️⃣ Header Guards
+
+```cpp
+#ifndef RIDER_H
+#define RIDER_H
+````
+
+Prevents multiple inclusion of the header file during compilation.
+
+---
+
+## 2️⃣ Included Libraries
+
+```cpp
+#include <string>
+```
+
+Used to store the rider’s name.
+
+---
+
+## 3️⃣ Rider Class Declaration
+
+```cpp
+class Rider {
+```
+
+This class models a **real-world rider** in the system.
+
+---
+
+## 4️⃣ Private Data Members
+
+```cpp
+private:
+    int id;
+    string name;
+    int pickupLocation;
+    int dropoffLocation;
+```
+
+### Explanation of Variables:
+
+* `id`
+  → Unique identifier for the rider
+
+* `name`
+  → Rider’s name
+
+* `pickupLocation`
+  → City node ID where the rider is waiting
+
+* `dropoffLocation`
+  → City node ID where the rider wants to go
+
+📌 All variables are **private** to maintain data security and encapsulation.
+
+---
+
+## 5️⃣ Constructors
+
+```cpp
+Rider();
+Rider(int riderId, string riderName, int pickup, int dropoff);
+```
+
+### Purpose:
+
+* Default constructor → creates an empty rider
+* Parameterized constructor → creates a valid rider with full information
+
+---
+
+## 6️⃣ Getter Functions
+
+```cpp
+int getId();
+string getName();
+int getPickupLocation();
+int getDropoffLocation();
+```
+
+### Explanation:
+
+* Provide controlled access to private data
+* No setters are provided because rider data does not change after trip request
+
+---
+
+# ⚙️ Rider.cpp (Implementation Explanation)
+
+The `.cpp` file defines **HOW** the Rider class functions work.
+
+---
+
+## 7️⃣ Default Constructor
+
+```cpp
+Rider::Rider() {
+    id = -1;
+    name = "";
+    pickupLocation = -1;
+    dropoffLocation = -1;
+}
+```
+
+### Explanation:
+
+* Initializes rider with invalid/default values
+* `-1` indicates uninitialized locations
+
+📌 Useful for arrays and temporary objects.
+
+---
+
+## 8️⃣ Parameterized Constructor
+
+```cpp
+Rider::Rider(int riderId, string riderName, int pickup, int dropoff)
+```
+
+### Explanation:
+
+* Assigns all rider information at creation time
+* Ensures rider object is complete and valid
+
+---
+
+## 9️⃣ Getter Function Implementations
+
+### getId()
+
+```cpp
+int Rider::getId() {
+    return id;
+}
+```
+
+Returns the rider’s ID.
+
+---
+
+### getName()
+
+```cpp
+string Rider::getName() {
+    return name;
+}
+```
+
+Returns the rider’s name.
+
+---
+
+### getPickupLocation()
+
+```cpp
+int Rider::getPickupLocation() {
+    return pickupLocation;
+}
+```
+
+Returns the pickup location node ID.
+
+---
+
+### getDropoffLocation()
+
+```cpp
+int Rider::getDropoffLocation() {
+    return dropoffLocation;
+}
+```
+
+Returns the destination node ID.
+
+---
+
+## 🔗 How Rider Connects With Other Modules
+
+* **RideShareSystem**
+  → Uses Rider data to create new trips
+
+* **City**
+  → Uses pickup and drop-off locations to calculate route distance
+
+* **DispatchEngine**
+  → Uses pickup location to find nearest driver
+
+📌 Rider only provides data; it does not control system logic.
+
+---
+
+## ✅ Beginner One-Line Summary
+
+> **“The Rider class stores rider details such as pickup and drop-off locations, allowing the system to create and manage trip requests.”**
+
+---
+
+## 🎤 Common Viva Questions (Rider Module)
+
+**Q: Why does Rider not have setters?**
+A: Rider data does not change after requesting a trip.
+
+**Q: Why separate Rider and Driver classes?**
+A: They represent different roles with different responsibilities.
+
+**Q: What happens if pickup and drop-off are the same?**
+A: The system can still handle it, but distance will be zero.
+
+---
+
+## ✔ Conclusion
+
+The Rider module:
+
+* Represents customers in the system
+* Provides essential trip data
+* Keeps responsibilities well-defined
+* Follows clean OOP design
+
+
 
 
