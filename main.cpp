@@ -137,5 +137,62 @@ nt main() {
             break;
         }
 
+        case 4: {
+            int tripId;
+            cout << "Enter Trip ID: ";
+            cin >> tripId;
+            cout << (demo.startTrip(tripId) ? "Trip Started\n" : "Start Failed\n");
+            break;
+        }
+
+        case 5: {
+            int tripId;
+            cout << "Enter Trip ID: ";
+            cin >> tripId;
+            cout << (demo.completeTrip(tripId) ? "Trip Completed\n" : "Completion Failed\n");
+            break;
+        }
+
+        case 6: {
+            int tripId;
+            cout << "Enter Trip ID: ";
+            cin >> tripId;
+            cout << (demo.cancelTrip(tripId) ? "Trip Cancelled\n" : "Cancellation Failed\n");
+            break;
+        }
+
+        case 7:
+            demo.displayTripHistory();
+            break;
+
+        case 8:
+            demo.displayAnalytics();
+            break;
+
+        case 9: {
+            int steps;
+            cout << "Enter number of operations to rollback: ";
+            cin >> steps;
+            demo.rollbackOperations(steps);
+            cout << "Rollback completed.\n";
+            break;
+        }
+
+        case 0:
+            running = false;
+            cout << "Exiting program...\n";
+            break;
+
+        default:
+            cout << "Invalid choice. Try again.\n";
+        }
+    }
+
+    cout << "\n========== PROGRAM ENDED ==========\n";
+    return 0;
+}
+
+
+
     
 
