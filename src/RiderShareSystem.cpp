@@ -19,3 +19,37 @@ RideShareSystem::~RideShareSystem() {
     delete rollback;
     delete[] trips;
 }
+void RideShareSystem::initializeCity() {
+    for (int i = 0; i < 15; i++) {
+        city->addNode(i, "Location" + to_string(i), i / 5);
+    }
+    
+    city->addEdge(0, 1, 5);
+    city->addEdge(1, 0, 5);
+    city->addEdge(1, 2, 8);
+    city->addEdge(2, 1, 8);
+    city->addEdge(2, 3, 6);
+    city->addEdge(3, 2, 6);
+    city->addEdge(3, 4, 7);
+    city->addEdge(4, 3, 7);
+    city->addEdge(0, 5, 10);
+    city->addEdge(5, 0, 10);
+    city->addEdge(5, 6, 4);
+    city->addEdge(6, 5, 4);
+    city->addEdge(6, 7, 9);
+    city->addEdge(7, 6, 9);
+    city->addEdge(7, 8, 5);
+    city->addEdge(8, 7, 5);
+    city->addEdge(8, 9, 6);
+    city->addEdge(9, 8, 6);
+    city->addEdge(5, 10, 12);
+    city->addEdge(10, 5, 12);
+    city->addEdge(10, 11, 7);
+    city->addEdge(11, 10, 7);
+    city->addEdge(11, 12, 8);
+    city->addEdge(12, 11, 8);
+    city->addEdge(12, 13, 6);
+    city->addEdge(13, 12, 6);
+    city->addEdge(13, 14, 9);
+    city->addEdge(14, 13, 9);
+}
