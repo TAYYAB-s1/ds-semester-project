@@ -209,3 +209,55 @@ bool RideShareSystem::cancelTrip(int tripId) {
     return true;
 }
 
+void RideShareSystem::rollbackOperations(int k) {
+    for (int i = 0; i < k && rollback->hasOperations(); i++) {
+        Operation op = rollback->popOperation();
+        
+        if (op.type == "REQUEST") {
+            tripCount--;
+            nextTripId--;
+        }
+        else if (op.type == "ASSIGN") {
+            Trip* trip = findTrip(op.tripId);
+            if (trip != nullptr) {
+                Driver* driver = dispatch->getDriver(op.driverId);
+                if (driver != nullptr) {
+                    driver->setAvailable(op.driverAvailability);
+                }
+                trip->cancelTrip();
+                *trip = Trip(op.tripId, trip->getRiderId(), trip->getPickupLocation(), trip->getDropoffLocation(), trip->getDistance());
+            }
+        }
+        else if (op.type == "START") {
+            Trip* trip = findTrip(op.tripId);
+            if (trip != nullptr) {
+                trip->assignDriver(op.driverId);
+            }
+        }
+        else if (op.type == "COMPLETE") {
+            Trip* trip = findTrip(op.tripId);
+            if (trip != nullptr) {
+                Driver* driver = dispatch->getDriver(op.driverId);
+                if (driver != nullptr) {
+                    driver->setLocation(op.driverLocation);
+                    driver->setAvailable(op.driverAvailability);
+                }
+                trip->startTrip();
+            }
+        }
+        else if (op.type == "CANCEL") {
+            Trip* trip = findTrip(op.tripId);
+            if (trip != nullptr) {
+                if (op.previousState == ASSIGNED) {
+                    Driver* driver = dispatch->getDriver(op.driverId);
+                    if (driver != nullptr) {
+                        driver->setAvailable(op.driverAvailability);
+                    }
+                    trip->assignDriver(op.driverId);
+                } else if (op.previousState == REQUESTED) {
+                    *trip = Trip(op.tripId, trip->getRiderId(), trip->getPickupLocation(), trip->getDropoffLocation(), trip->getDistance());
+                }
+            }
+        }
+    }
+}
