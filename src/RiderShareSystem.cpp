@@ -261,3 +261,52 @@ void RideShareSystem::rollbackOperations(int k) {
         }
     }
 }
+
+void RideShareSystem::displayTripHistory() {
+    cout << "\n===== TRIP HISTORY =====" << endl;
+    for (int i = 0; i < tripCount; i++) {
+        cout << "Trip ID: " << trips[i].getId() 
+             << " | State: " << trips[i].getStateString()
+             << " | Distance: " << trips[i].getDistance() << endl;
+    }
+}
+
+void RideShareSystem::displayAnalytics() {
+    cout << "\n===== ANALYTICS =====" << endl;
+    
+    int totalDistance = 0;
+    int completedTrips = 0;
+    int cancelledTrips = 0;
+    
+    for (int i = 0; i < tripCount; i++) {
+        if (trips[i].getState() == COMPLETED) {
+            totalDistance += trips[i].getDistance();
+            completedTrips++;
+        } else if (trips[i].getState() == CANCELLED) {
+            cancelledTrips++;
+        }
+    }
+    
+    cout << "Total Trips: " << tripCount << endl;
+    cout << "Completed Trips: " << completedTrips << endl;
+    cout << "Cancelled Trips: " << cancelledTrips << endl;
+    
+    if (completedTrips > 0) {
+        cout << "Average Trip Distance: " << (totalDistance / completedTrips) << endl;
+    } else {
+        cout << "Average Trip Distance: 0" << endl;
+    }
+    
+    cout << "Driver Utilization: " << dispatch->getDriverCount() << " drivers" << endl;
+}
+
+int RideShareSystem::getTripCount() {
+    return tripCount;
+}
+
+Trip* RideShareSystem::getTrip(int index) {
+    if (index >= 0 && index < tripCount) {
+        return &trips[index];
+    }
+    return nullptr;
+}
