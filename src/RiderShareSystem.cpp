@@ -100,3 +100,51 @@ Trip* RideShareSystem::findTrip(int tripId) {
     }
     return nullptr;
 }
+
+bool RideShareSystem::assignDriver(int tripId) {
+    Trip* trip = findTrip(tripId);
+    if (trip == nullptr || trip->getState() != REQUESTED) {
+        return false;
+    }
+    
+    int driverIdx = dispatch->findBestDriver(trip->getPickupLocation());
+    if (driverIdx == -1) {
+        return false;
+    }
+    
+    Driver* driver = dispatch->getDriver(driverIdx);
+    if (driver == nullptr) {
+        return false;
+    }
+    
+    Operation op;
+    op.type = "ASSIGN";
+    op.tripId = tripId;
+    op.driverId = driver->getId();
+    op.driverLocation = driver->getCurrentLocation();
+    op.driverAvailability = driver->isAvailable();
+    op.previousState = trip->getState();
+    rollback->recordOperation(op);
+    
+    trip->assignDriver(driver->getId());
+    driver->setAvailable(false);
+    
+    return true;
+}
+
+bool RideShareSystem::startTrip(int tripId) {
+    Trip* trip = findTrip(tripId);
+    if (trip == nullptr || trip->getState() != ASSIGNED) {
+        return false;
+    }
+    
+    Operation op;
+    op.type = "START";
+    op.tripId = tripId;
+    op.driverId = trip->getDriverId();
+    op.previousState = trip->getState();
+    rollback->recordOperation(op);
+    
+    trip->startTrip();
+    return true;
+}
