@@ -148,3 +148,64 @@ bool RideShareSystem::startTrip(int tripId) {
     trip->startTrip();
     return true;
 }
+
+bool RideShareSystem::completeTrip(int tripId) {
+    Trip* trip = findTrip(tripId);
+    if (trip == nullptr || trip->getState() != ONGOING) {
+        return false;
+    }
+    
+    Driver* driver = dispatch->getDriver(trip->getDriverId());
+    if (driver != nullptr) {
+        Operation op;
+        op.type = "COMPLETE";
+        op.tripId = tripId;
+        op.driverId = driver->getId();
+        op.driverLocation = driver->getCurrentLocation();
+        op.driverAvailability = driver->isAvailable();
+        op.previousState = trip->getState();
+        rollback->recordOperation(op);
+        
+        trip->completeTrip();
+        driver->setLocation(trip->getDropoffLocation());
+        driver->setAvailable(true);
+        return true;
+    }
+    
+    return false;
+}
+
+bool RideShareSystem::cancelTrip(int tripId) {
+    Trip* trip = findTrip(tripId);
+    if (trip == nullptr || (trip->getState() != REQUESTED && trip->getState() != ASSIGNED)) {
+        return false;
+    }
+    
+    TripState prevState = trip->getState();
+    
+    if (prevState == ASSIGNED) {
+        Driver* driver = dispatch->getDriver(trip->getDriverId());
+        if (driver != nullptr) {
+            Operation op;
+            op.type = "CANCEL";
+            op.tripId = tripId;
+            op.driverId = driver->getId();
+            op.driverAvailability = driver->isAvailable();
+            op.previousState = prevState;
+            rollback->recordOperation(op);
+            
+            driver->setAvailable(true);
+        }
+    } else {
+        Operation op;
+        op.type = "CANCEL";
+        op.tripId = tripId;
+        op.driverId = -1;
+        op.previousState = prevState;
+        rollback->recordOperation(op);
+    }
+    
+    trip->cancelTrip();
+    return true;
+}
+
