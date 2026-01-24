@@ -1,4 +1,3 @@
-
 #ifndef DISPATCHENGINE_H
 #define DISPATCHENGINE_H
 
