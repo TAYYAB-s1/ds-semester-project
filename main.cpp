@@ -28,3 +28,34 @@ void runTests(RideShareSystem& system) {
     cout << "\nTest 4: Assign driver to trip" << endl;
     bool assigned = system.assignDriver(trip1);
     cout << "Driver assignment: " << (assigned ? "SUCCESS" : "FAILED") << endl;
+
+    cout << "\nTest 5: Complete trip" << endl;
+    bool completed = system.completeTrip(trip1);
+    cout << "Trip start: " << (completed ? "SUCCESS" : "FAILED") << endl;
+
+    cout << "\nTest 6: Complete trip" << endl;
+    bool completed = system.completeTrip(trip1);
+    cout << "Trip completion: " << (completed ? "SUCCESS" : "FAILED") << endl;
+    
+    cout << "\nTest 7: Request and cancel trip" << endl;
+    Rider r2(2, "Emma", 5, 9);
+    int trip2 = system.requestTrip(r2);
+    system.assignDriver(trip2);
+    bool cancelled = system.cancelTrip(trip2);
+    cout << "Trip cancellation: " << (cancelled ? "SUCCESS" : "FAILED") << endl;
+    
+    cout << "\nTest 8: Driver reassignment after cancellation" << endl;
+    Rider r3(3, "Mike", 1, 3);
+    int trip3 = system.requestTrip(r3);
+    assigned = system.assignDriver(trip3);
+    cout << "Driver reassignment: " << (assigned ? "SUCCESS" : "FAILED") << endl;
+    
+    cout << "\nTest 9: Invalid state transition handling" << endl;
+    bool invalidStart = system.startTrip(999);
+    cout << "Invalid trip start blocked: " << (!invalidStart ? "SUCCESS" : "FAILED") << endl;
+    
+    cout << "\nTest 10: Multiple trip rollbacks" << endl;
+    system.rollbackOperations(2);
+    cout << "Rolled back 2 operations" << endl;
+    
+
