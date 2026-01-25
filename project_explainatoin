@@ -1521,6 +1521,356 @@ The Trip module:
 * Forms the core logic of the system
 
 
+Excellent 👍
+Now we’re at **DispatchEngine**, which is a **viva-favorite file** because this is where **intelligence + DSA + real-world logic** come together.
+
+Below is a **proper beginner-friendly, line-by-line Markdown explanation** of **`DispatchEngine.h` and `DispatchEngine.cpp`**, consistent with your previous documentation.
+
+---
+
+````markdown
+# 🧠 DispatchEngine Module Explanation (Beginner Friendly & Viva-Oriented)
+
+## Overview
+
+The **DispatchEngine** is the **brain of the ride-sharing system**.  
+Its main responsibility is to **select the best available driver** for a rider based on:
+
+- Driver availability
+- Shortest distance to pickup location
+- Zone-based optimization
+
+📌 This module simulates **real ride-sharing dispatch logic** used by apps like Uber or Careem.
+
+---
+
+## Why We Need a DispatchEngine
+
+In a ride-sharing system:
+- Multiple drivers may be available
+- Drivers may be at different locations
+- The closest driver is not always the best (zone matters)
+
+The DispatchEngine:
+- Evaluates all available drivers
+- Calculates distance using the **City graph**
+- Applies business rules (zone penalty)
+- Selects the **optimal driver**
+
+---
+
+# 🧱 DispatchEngine.h (Header File Explanation)
+
+The header file defines:
+- Data members for managing drivers
+- Public methods for driver assignment logic
+
+It tells **WHAT the DispatchEngine does**.
+
+---
+
+## 1️⃣ Header Guards
+
+```cpp
+#ifndef DISPATCHENGINE_H
+#define DISPATCHENGINE_H
+````
+
+Prevents multiple inclusion of the header file.
+
+---
+
+## 2️⃣ Included Header Files
+
+```cpp
+#include "City.h"
+#include "Driver.h"
+```
+
+### Why included?
+
+* `City.h` → needed to calculate shortest paths and zones
+* `Driver.h` → needed to manage driver data
+
+📌 Shows strong **module interaction**.
+
+---
+
+## 3️⃣ DispatchEngine Class Declaration
+
+```cpp
+class DispatchEngine {
+```
+
+This class controls **driver management and assignment**.
+
+---
+
+## 4️⃣ Private Data Members
+
+```cpp
+private:
+    Driver* drivers;
+    int driverCount;
+    int driverCapacity;
+    City* city;
+```
+
+### Explanation:
+
+* `drivers`
+  → Dynamic array of Driver objects
+
+* `driverCount`
+  → Number of registered drivers
+
+* `driverCapacity`
+  → Maximum size of the array
+
+* `city`
+  → Pointer to City graph for distance calculations
+
+📌 Dynamic array used instead of STL vector.
+
+---
+
+## 5️⃣ Private Helper Function
+
+```cpp
+void resizeDrivers();
+```
+
+### Purpose:
+
+* Doubles the driver array size when capacity is full
+* Supports dynamic growth of drivers
+
+---
+
+## 6️⃣ Public Member Functions
+
+```cpp
+DispatchEngine(City* cityGraph);
+~DispatchEngine();
+
+void addDriver(Driver driver);
+int findBestDriver(int pickupLocation);
+Driver* getDriver(int driverId);
+int getDriverCount();
+```
+
+### Explanation:
+
+* Constructor → connects DispatchEngine to City
+* Destructor → frees memory
+* addDriver() → registers new drivers
+* findBestDriver() → core dispatch logic
+* getDriver() → returns pointer to a driver
+* getDriverCount() → returns total drivers
+
+---
+
+# ⚙️ DispatchEngine.cpp (Implementation Explanation)
+
+The `.cpp` file defines **HOW dispatch logic works**.
+
+---
+
+## 7️⃣ Constructor
+
+```cpp
+DispatchEngine::DispatchEngine(City* cityGraph)
+```
+
+### Explanation:
+
+* Stores pointer to City graph
+* Initializes driver array with capacity 20
+* Sets driver count to zero
+
+📌 City pointer allows distance and zone queries.
+
+---
+
+## 8️⃣ Destructor
+
+```cpp
+DispatchEngine::~DispatchEngine()
+```
+
+### Explanation:
+
+* Deletes dynamically allocated driver array
+* Prevents memory leaks
+
+---
+
+## 9️⃣ resizeDrivers()
+
+```cpp
+void DispatchEngine::resizeDrivers()
+```
+
+### Purpose:
+
+* Increases driver storage capacity dynamically
+
+### Steps:
+
+1. Double capacity
+2. Allocate new array
+3. Copy old drivers
+4. Delete old array
+
+📌 Similar to City resize logic.
+
+---
+
+## 🔟 addDriver()
+
+```cpp
+void DispatchEngine::addDriver(Driver driver)
+```
+
+### Explanation:
+
+* Checks if resizing is needed
+* Adds driver to the array
+* Increments driver count
+
+📌 Time Complexity: **O(1)** (amortized)
+
+---
+
+## 1️⃣1️⃣ findBestDriver() ⭐ (MOST IMPORTANT FUNCTION)
+
+```cpp
+int DispatchEngine::findBestDriver(int pickupLocation)
+```
+
+### Step-by-Step Logic:
+
+1. Initialize:
+
+   * `bestDriver = -1`
+   * `minDistance = INT_MAX`
+
+2. Get pickup zone:
+
+```cpp
+int pickupZone = city->getNodeZone(pickupLocation);
+```
+
+3. Loop through all drivers:
+
+```cpp
+for (int i = 0; i < driverCount; i++)
+```
+
+4. Check availability:
+
+```cpp
+if (drivers[i].isAvailable())
+```
+
+5. Calculate distance:
+
+```cpp
+distance = city->findShortestPath(driverLocation, pickupLocation);
+```
+
+6. Apply zone penalty:
+
+```cpp
+if (driverZone != pickupZone) {
+    distance += 50;
+}
+```
+
+7. Select minimum distance driver
+
+📌 This ensures:
+
+* Nearby drivers are preferred
+* Same-zone drivers get priority
+
+---
+
+## 1️⃣2️⃣ getDriver()
+
+```cpp
+Driver* DispatchEngine::getDriver(int driverId)
+```
+
+### Explanation:
+
+* Searches driver by ID
+* Returns pointer to driver
+* Returns `nullptr` if not found
+
+📌 Used by RideShareSystem and RollbackManager.
+
+---
+
+## 1️⃣3️⃣ getDriverCount()
+
+```cpp
+int DispatchEngine::getDriverCount()
+```
+
+Returns the total number of drivers.
+
+---
+
+## 🔗 How DispatchEngine Connects With Other Modules
+
+* **City**
+  → Provides distance and zone data
+
+* **Driver**
+  → Supplies availability and location
+
+* **Trip**
+  → Gets assigned a driver
+
+* **RideShareSystem**
+  → Controls when dispatch happens
+
+📌 DispatchEngine never directly changes trip states.
+
+---
+
+## ✅ Beginner One-Line Summary
+
+> **“The DispatchEngine selects the best available driver by calculating shortest distances and applying zone-based penalties.”**
+
+---
+
+## 🎤 Common Viva Questions (DispatchEngine)
+
+**Q: Why add a zone penalty?**
+A: To prefer local drivers and reduce cross-zone travel.
+
+**Q: Why return driver index instead of object?**
+A: Efficient reference handling and controlled access.
+
+**Q: Time complexity of findBestDriver()?**
+A: O(D × V²), where D is number of drivers.
+
+---
+
+## ✔ Conclusion
+
+The DispatchEngine:
+
+* Implements intelligent driver selection
+* Uses graph algorithms
+* Follows real-world ride-sharing rules
+* Demonstrates advanced DSA concepts
+
+
+
+
 
 
 
