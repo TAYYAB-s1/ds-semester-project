@@ -1135,5 +1135,392 @@ The Rider module:
 * Follows clean OOP design
 
 
+Excellent 👍
+Now we’ll explain **`Trip.h` and `Trip.cpp`** in **full beginner detail**, **viva-oriented**, and in a **clean Markdown format**, just like your previous files.
+
+⚠️ **This is the MOST IMPORTANT module** in viva because it implements a **state machine**.
+
+---
+
+````markdown
+# 🧾 Trip Module Explanation (Beginner Friendly & Viva-Oriented)
+
+## Overview
+
+The **Trip module** represents a **ride (trip)** in the Ride-Sharing Dispatch & Trip Management System.
+
+A trip:
+- Is created when a rider requests a ride
+- Gets assigned to a driver
+- Moves through different states
+- Can be completed or cancelled
+
+📌 This module implements a **state machine**, which ensures that trips follow a valid lifecycle.
+
+---
+
+## Why the Trip Class Is Important
+
+In real ride-sharing systems:
+- A trip cannot start before a driver is assigned
+- A trip cannot be completed before it starts
+- Invalid actions must be blocked
+
+The **Trip class enforces these rules** using well-defined states and transitions.
+
+---
+
+# 🧱 Trip.h (Header File Explanation)
+
+The header file defines:
+- Trip states
+- Trip data members
+- Valid operations on a trip
+
+It describes **WHAT a Trip is and WHAT operations are allowed**.
+
+---
+
+## 1️⃣ Header Guards
+
+```cpp
+#ifndef TRIP_H
+#define TRIP_H
+````
+
+Prevents multiple inclusion of the header file.
+
+---
+
+## 2️⃣ TripState Enum (State Machine Core)
+
+```cpp
+enum TripState {
+    REQUESTED,
+    ASSIGNED,
+    ONGOING,
+    COMPLETED,
+    CANCELLED
+};
+```
+
+### Explanation of States:
+
+* **REQUESTED**
+  → Trip is created but no driver is assigned yet
+
+* **ASSIGNED**
+  → A driver has been assigned
+
+* **ONGOING**
+  → Trip has started
+
+* **COMPLETED**
+  → Trip finished successfully
+
+* **CANCELLED**
+  → Trip cancelled by rider or system
+
+📌 This enum ensures a trip is **always in one valid state**.
+
+---
+
+## 3️⃣ Trip Class Declaration
+
+```cpp
+class Trip {
+```
+
+This class models a **real-world ride request**.
+
+---
+
+## 4️⃣ Private Data Members
+
+```cpp
+private:
+    int id;
+    int riderId;
+    int driverId;
+    int pickupLocation;
+    int dropoffLocation;
+    int distance;
+    TripState state;
+```
+
+### Explanation of Each Variable:
+
+* `id`
+  → Unique identifier for the trip
+
+* `riderId`
+  → ID of the rider who requested the trip
+
+* `driverId`
+  → ID of the assigned driver (`-1` if none)
+
+* `pickupLocation`
+  → Starting location (city node ID)
+
+* `dropoffLocation`
+  → Destination location (city node ID)
+
+* `distance`
+  → Total trip distance (calculated using City graph)
+
+* `state`
+  → Current state of the trip
+
+📌 All variables are private to protect trip integrity.
+
+---
+
+## 5️⃣ Constructors
+
+```cpp
+Trip();
+Trip(int tripId, int rider, int pickup, int dropoff, int dist);
+```
+
+### Purpose:
+
+* Default constructor → creates an empty trip
+* Parameterized constructor → creates a valid trip request
+
+---
+
+## 6️⃣ Getter Functions
+
+```cpp
+int getId();
+int getRiderId();
+int getDriverId();
+int getPickupLocation();
+int getDropoffLocation();
+int getDistance();
+TripState getState();
+```
+
+These provide **read-only access** to trip data.
+
+---
+
+## 7️⃣ State-Changing Functions
+
+```cpp
+void assignDriver(int driver);
+void startTrip();
+void completeTrip();
+void cancelTrip();
+```
+
+📌 These functions enforce **valid state transitions**.
+
+---
+
+## 8️⃣ getStateString()
+
+```cpp
+string getStateString();
+```
+
+Converts enum state into a readable string (useful for output & debugging).
+
+---
+
+# ⚙️ Trip.cpp (Implementation Explanation)
+
+The `.cpp` file defines **HOW the trip logic works**.
+
+---
+
+## 9️⃣ Default Constructor
+
+```cpp
+Trip::Trip()
+```
+
+### Explanation:
+
+* Initializes all IDs to `-1`
+* Sets distance to `0`
+* Initial state is `REQUESTED`
+
+📌 Ensures safe default initialization.
+
+---
+
+## 🔟 Parameterized Constructor
+
+```cpp
+Trip::Trip(int tripId, int rider, int pickup, int dropoff, int dist)
+```
+
+### Explanation:
+
+* Sets trip details at creation
+* No driver assigned yet
+* State is `REQUESTED`
+
+📌 This constructor is used when a rider requests a trip.
+
+---
+
+## 1️⃣1️⃣ Getter Implementations
+
+Each getter simply returns the corresponding private value.
+
+Example:
+
+```cpp
+int Trip::getId() {
+    return id;
+}
+```
+
+📌 Keeps data encapsulated.
+
+---
+
+## 1️⃣2️⃣ assignDriver()
+
+```cpp
+void Trip::assignDriver(int driver) {
+    if (state == REQUESTED) {
+        driverId = driver;
+        state = ASSIGNED;
+    }
+}
+```
+
+### Explanation:
+
+* Driver can only be assigned if trip is in `REQUESTED` state
+* Prevents invalid assignment
+
+📌 First valid state transition.
+
+---
+
+## 1️⃣3️⃣ startTrip()
+
+```cpp
+void Trip::startTrip() {
+    if (state == ASSIGNED) {
+        state = ONGOING;
+    }
+}
+```
+
+### Explanation:
+
+* Trip can start only after driver assignment
+
+📌 Prevents starting an unassigned trip.
+
+---
+
+## 1️⃣4️⃣ completeTrip()
+
+```cpp
+void Trip::completeTrip() {
+    if (state == ONGOING) {
+        state = COMPLETED;
+    }
+}
+```
+
+### Explanation:
+
+* Trip can only be completed if it is ongoing
+
+📌 Prevents skipping states.
+
+---
+
+## 1️⃣5️⃣ cancelTrip()
+
+```cpp
+void Trip::cancelTrip() {
+    if (state == REQUESTED || state == ASSIGNED) {
+        state = CANCELLED;
+    }
+}
+```
+
+### Explanation:
+
+* Trip can be cancelled before it starts
+* Cancellation is blocked once trip is ongoing
+
+📌 Mimics real-world ride-sharing rules.
+
+---
+
+## 1️⃣6️⃣ getStateString()
+
+```cpp
+string Trip::getStateString()
+```
+
+### Explanation:
+
+* Converts enum state into readable text
+* Used in analytics and trip history
+
+---
+
+## 🔁 Trip State Machine Flow
+
+```
+REQUESTED → ASSIGNED → ONGOING → COMPLETED
+      ↓           ↓
+   CANCELLED   CANCELLED
+```
+
+📌 Invalid transitions are automatically blocked by conditions.
+
+---
+
+## 🔗 How Trip Connects With Other Modules
+
+* **Rider** → Creates a trip
+* **Driver** → Assigned and released
+* **DispatchEngine** → Assigns driver
+* **RollbackManager** → Restores trip states
+* **RideShareSystem** → Controls trip lifecycle
+
+---
+
+## ✅ Beginner One-Line Summary
+
+> **“The Trip class manages the lifecycle of a ride using a state machine, ensuring that all operations follow valid and realistic transitions.”**
+
+---
+
+## 🎤 Common Viva Questions (Trip Module)
+
+**Q: Why use an enum for trip states?**
+A: Enums ensure fixed, valid states and improve code clarity.
+
+**Q: Why can’t a trip be cancelled when ongoing?**
+A: To match real ride-sharing rules and maintain consistency.
+
+**Q: Who controls state transitions?**
+A: Trip class itself, through controlled member functions.
+
+---
+
+## ✔ Conclusion
+
+The Trip module:
+
+* Implements a complete state machine
+* Prevents invalid trip operations
+* Maintains data integrity
+* Forms the core logic of the system
+
+
+
 
 
