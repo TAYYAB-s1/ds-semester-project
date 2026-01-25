@@ -1868,6 +1868,813 @@ The DispatchEngine:
 * Follows real-world ride-sharing rules
 * Demonstrates advanced DSA concepts
 
+#include "../header/RollbackManager.h"
+
+using namespace std;
+
+RollbackManager::RollbackManager() {
+    head = nullptr;
+    operationCount = 0;
+}
+
+RollbackManager::~RollbackManager() {
+    while (head != nullptr) {
+        OperationNode* temp = head;
+        head = head->next;
+        delete temp;
+    }
+}
+
+void RollbackManager::recordOperation(Operation op) {
+    OperationNode* newNode = new OperationNode;
+    newNode->data = op;
+    newNode->next = head;
+    head = newNode;
+    operationCount++;
+}
+
+Operation RollbackManager::popOperation() {
+    if (head != nullptr) {
+        Operation op = head->data;
+        OperationNode* temp = head;
+        head = head->next;
+        delete temp;
+        operationCount--;
+        return op;
+    }
+    Operation empty;
+    empty.type = "";
+    return empty;
+}
+
+bool RollbackManager::hasOperations() {
+    return head != nullptr;
+}
+
+int RollbackManager::getOperationCount() {
+    return operationCount;
+}
+
+
+
+
+Perfect 👍
+Here is the **final remaining explanation** for your project, written **clearly for beginners**, **structured for viva**, and in **clean Markdown format**.
+
+---
+
+# 🔁 RollbackManager (`RollbackManager.h` & `RollbackManager.cpp`)
+
+## 📌 Purpose of RollbackManager
+
+The **RollbackManager** is responsible for the **undo (rollback) functionality** in the Ride-Sharing System.
+
+In real systems:
+
+* Mistakes happen
+* Operations need to be reverted
+* Testing requires undoing steps
+
+👉 This class allows the system to **reverse previous actions** like:
+
+* Trip request
+* Driver assignment
+* Trip start
+* Trip completion
+* Trip cancellation
+
+This is an **advanced DSA feature** and strongly impresses examiners in viva.
+
+---
+
+## 🧠 Data Structure Used
+
+### ✅ Stack (LIFO – Last In, First Out)
+
+Implemented using:
+
+* **Linked List**
+* Custom nodes (`OperationNode`)
+
+Why Stack?
+
+* The **last operation** should be undone **first**
+* Perfect fit for rollback logic
+
+---
+
+## 📂 RollbackManager.h (Header File Explanation)
+
+### 🔹 Operation Structure
+
+```cpp
+struct Operation {
+    string type;
+    int tripId;
+    int driverId;
+    int driverLocation;
+    bool driverAvailability;
+    TripState previousState;
+};
+```
+
+📌 Stores **everything needed to undo an operation**.
+
+| Field                | Meaning                                                   |
+| -------------------- | --------------------------------------------------------- |
+| `type`               | Type of action (REQUEST, ASSIGN, START, COMPLETE, CANCEL) |
+| `tripId`             | Which trip was affected                                   |
+| `driverId`           | Which driver was involved                                 |
+| `driverLocation`     | Driver’s old location                                     |
+| `driverAvailability` | Driver’s old availability                                 |
+| `previousState`      | Trip state before operation                               |
+
+💡 Without saving this data, rollback would be impossible.
+
+---
+
+### 🔹 OperationNode (Stack Node)
+
+```cpp
+struct OperationNode {
+    Operation data;
+    OperationNode* next;
+};
+```
+
+This forms a **linked list stack**:
+
+* `data` → operation info
+* `next` → pointer to previous operation
+
+---
+
+### 🔹 RollbackManager Class Declaration
+
+```cpp
+class RollbackManager {
+private:
+    OperationNode* head;
+    int operationCount;
+```
+
+#### Private Members
+
+* `head` → top of stack
+* `operationCount` → total operations stored
+
+---
+
+### 🔹 Public Functions
+
+```cpp
+RollbackManager();
+~RollbackManager();
+
+void recordOperation(Operation op);
+Operation popOperation();
+bool hasOperations();
+int getOperationCount();
+```
+
+| Function              | Purpose                     |
+| --------------------- | --------------------------- |
+| `recordOperation()`   | Push operation onto stack   |
+| `popOperation()`      | Pop last operation          |
+| `hasOperations()`     | Check if rollback possible  |
+| `getOperationCount()` | Number of stored operations |
+
+---
+
+## ⚙️ RollbackManager.cpp (Implementation Explanation)
+
+---
+
+### 🔹 Constructor
+
+```cpp
+RollbackManager::RollbackManager() {
+    head = nullptr;
+    operationCount = 0;
+}
+```
+
+✔ Initializes empty stack
+✔ No operations stored initially
+
+---
+
+### 🔹 Destructor (Memory Cleanup)
+
+```cpp
+RollbackManager::~RollbackManager() {
+    while (head != nullptr) {
+        OperationNode* temp = head;
+        head = head->next;
+        delete temp;
+    }
+}
+```
+
+📌 Deletes all nodes to:
+
+* Prevent memory leaks
+* Free heap memory
+
+---
+
+### 🔹 recordOperation() → PUSH Operation
+
+```cpp
+void RollbackManager::recordOperation(Operation op) {
+    OperationNode* newNode = new OperationNode;
+    newNode->data = op;
+    newNode->next = head;
+    head = newNode;
+    operationCount++;
+}
+```
+
+✔ Creates new stack node
+✔ Inserts at **top of stack**
+✔ Increases operation count
+
+📌 This is **O(1)** time complexity.
+
+---
+
+### 🔹 popOperation() → POP Operation
+
+```cpp
+Operation RollbackManager::popOperation() {
+    if (head != nullptr) {
+        Operation op = head->data;
+        OperationNode* temp = head;
+        head = head->next;
+        delete temp;
+        operationCount--;
+        return op;
+    }
+    Operation empty;
+    empty.type = "";
+    return empty;
+}
+```
+
+✔ Removes latest operation
+✔ Restores previous state
+✔ Returns operation details
+
+📌 Also **O(1)** complexity.
+
+---
+
+### 🔹 hasOperations()
+
+```cpp
+bool RollbackManager::hasOperations() {
+    return head != nullptr;
+}
+```
+
+✔ Checks if rollback is possible
+✔ Prevents invalid pop
+
+---
+
+### 🔹 getOperationCount()
+
+```cpp
+int RollbackManager::getOperationCount() {
+    return operationCount;
+}
+```
+
+✔ Useful for analytics & debugging
+
+---
+
+## 🔄 How Rollback Works in the System
+
+Example scenario:
+
+1️⃣ Trip requested
+2️⃣ Driver assigned
+3️⃣ Trip started
+4️⃣ User calls rollback(2)
+
+📌 System will:
+
+* Undo `START`
+* Undo `ASSIGN`
+
+Each undo restores:
+
+* Trip state
+* Driver availability
+* Driver location
+
+---
+
+## 🎓 Viva Questions & Answers
+
+### ❓ Why did you implement rollback?
+
+**Answer:**
+To undo operations safely and simulate real system recovery using stack-based rollback.
+
+---
+
+### ❓ Why use a stack?
+
+**Answer:**
+Rollback requires reversing the most recent operation first, which follows LIFO order.
+
+---
+
+### ❓ Time complexity of rollback operations?
+
+**Answer:**
+Push and pop both run in **O(1)** time.
+
+---
+
+### ❓ Is STL stack used?
+
+**Answer:**
+No. A custom linked list stack was implemented to meet DSA requirements.
+
+---
+
+## ⭐ Why RollbackManager Is Viva-Gold
+
+✔ Advanced DSA concept
+✔ Stack + linked list
+✔ Real-world system recovery
+✔ Clean separation of concerns
+✔ No STL dependency
+
+---
+
+## 🧠 One-Line Viva Summary
+
+> “RollbackManager uses a stack-based linked list to undo trip and driver operations, ensuring system consistency and recovery.”
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------------
+
+# 🚕 RideShareSystem Module
+
+*(Central Controller of the Ride-Sharing Project)*
+
+---
+
+## 📌 Purpose of RideShareSystem
+
+`RideShareSystem` is the **main coordination class** that connects **all other modules**:
+
+* City (map & distances)
+* Driver (availability & location)
+* Rider (trip request)
+* Trip (state machine)
+* DispatchEngine (driver selection)
+* RollbackManager (undo operations)
+
+👉 **Think of it as the “Manager” or “Controller” class**, similar to backend logic in Uber/Careem.
+
+---
+
+## 🧩 Role in a 2-Student Project
+
+In a **2-student team**, responsibilities can be divided like this:
+
+### 👨‍💻 Student 1 (Core Logic)
+
+* City graph
+* DispatchEngine
+* Driver & Rider
+* Shortest path logic
+
+### 👩‍💻 Student 2 (System Controller)
+
+* RideShareSystem
+* Trip lifecycle
+* Rollback mechanism
+* Analytics & history
+
+This shows **good modular design** — examiners love this.
+
+---
+
+## 📂 RideShareSystem.h — Header File Explanation
+
+```cpp
+#ifndef RIDESHARESYSTEM_H
+#define RIDESHARESYSTEM_H
+```
+
+👉 **Header guards** prevent multiple inclusion errors.
+
+---
+
+### 🔗 Included Files
+
+```cpp
+#include "City.h"
+#include "Driver.h"
+#include "Rider.h"
+#include "Trip.h"
+#include "DispatchEngine.h"
+#include "RollbackManager.h"
+```
+
+✅ Shows **strong modular design**
+Each class has a **single responsibility**.
+
+---
+
+## 🏗️ Class Declaration
+
+```cpp
+class RideShareSystem {
+```
+
+This class **controls the full workflow** of the ride-sharing system.
+
+---
+
+## 🔒 Private Data Members
+
+```cpp
+City* city;
+DispatchEngine* dispatch;
+RollbackManager* rollback;
+```
+
+### Why pointers?
+
+* Dynamic memory
+* Shared access between components
+* Real-world backend style
+
+---
+
+```cpp
+Trip* trips;
+int tripCount;
+int tripCapacity;
+int nextTripId;
+```
+
+### Explanation:
+
+* `trips` → Dynamic array of trips
+* `tripCount` → Number of active trips
+* `tripCapacity` → Array size
+* `nextTripId` → Auto-increment trip ID
+
+📌 **Why dynamic array?**
+
+> We don’t know how many trips users will request.
+
+---
+
+### 🔧 Private Helper Functions
+
+```cpp
+void resizeTrips();
+Trip* findTrip(int tripId);
+```
+
+* `resizeTrips()` → Expands array when full
+* `findTrip()` → Searches trip by ID
+
+---
+
+## 🟢 Public Functions (System Features)
+
+```cpp
+RideShareSystem();
+~RideShareSystem();
+```
+
+* Constructor → Initializes system
+* Destructor → Frees memory (VERY important for viva)
+
+---
+
+```cpp
+void initializeCity();
+```
+
+Creates the **city map (graph)**.
+
+---
+
+```cpp
+void addDriver(Driver driver);
+int requestTrip(Rider rider);
+```
+
+* Add drivers to system
+* Riders request trips
+
+---
+
+```cpp
+bool assignDriver(int tripId);
+bool startTrip(int tripId);
+bool completeTrip(int tripId);
+bool cancelTrip(int tripId);
+```
+
+👉 These represent the **Trip State Machine**.
+
+---
+
+```cpp
+void rollbackOperations(int k);
+```
+
+🔁 **Advanced Feature**
+Undo last `k` operations (rollback system)
+
+---
+
+```cpp
+void displayTripHistory();
+void displayAnalytics();
+```
+
+For reporting & statistics.
+
+---
+
+---
+
+# ⚙️ RideShareSystem.cpp — Implementation Explanation
+
+---
+
+## 🏁 Constructor
+
+```cpp
+RideShareSystem::RideShareSystem() {
+```
+
+### What happens here?
+
+```cpp
+city = new City();
+dispatch = new DispatchEngine(city);
+rollback = new RollbackManager();
+```
+
+✅ Dependency Injection
+DispatchEngine **depends on City**, so City is passed.
+
+---
+
+```cpp
+tripCapacity = 50;
+tripCount = 0;
+trips = new Trip[tripCapacity];
+nextTripId = 1;
+```
+
+✔ Pre-allocated memory
+✔ Efficient startup
+
+---
+
+## 🧹 Destructor
+
+```cpp
+RideShareSystem::~RideShareSystem() {
+```
+
+```cpp
+delete city;
+delete dispatch;
+delete rollback;
+delete[] trips;
+```
+
+💡 **Viva Gold Line**:
+
+> “We explicitly deallocate memory to avoid memory leaks.”
+
+---
+
+## 🗺️ initializeCity()
+
+```cpp
+for (int i = 0; i < 15; i++) {
+    city->addNode(i, "Location" + to_string(i), i / 5);
+}
+```
+
+* 15 locations
+* Divided into **zones**
+* Zone-based penalty used in dispatch
+
+---
+
+```cpp
+city->addEdge(0, 1, 5);
+```
+
+* Bidirectional weighted graph
+* Used for shortest path (Dijkstra-like logic)
+
+---
+
+## 🔁 resizeTrips()
+
+```cpp
+int newCapacity = tripCapacity * 2;
+```
+
+Dynamic array resizing — **similar to vector internally**.
+
+---
+
+## 🚘 addDriver()
+
+```cpp
+dispatch->addDriver(driver);
+```
+
+Driver storage handled by **DispatchEngine**
+👉 Proper separation of responsibility.
+
+---
+
+## 🧍 requestTrip()
+
+```cpp
+int distance = city->findShortestPath(...)
+```
+
+* Distance calculated using graph
+* Trip created in `REQUESTED` state
+
+---
+
+### 🧠 Rollback Recording
+
+```cpp
+Operation op;
+op.type = "REQUEST";
+rollback->recordOperation(op);
+```
+
+📌 Every action is logged for rollback.
+
+---
+
+## 🔍 findTrip()
+
+Linear search by trip ID
+(Simple & acceptable for in-memory system)
+
+---
+
+## 🤝 assignDriver()
+
+### Steps:
+
+1. Validate trip state
+2. Find best driver
+3. Record rollback
+4. Assign driver
+5. Mark driver unavailable
+
+📌 **DispatchEngine handles intelligence**, not this class.
+
+---
+
+## ▶️ startTrip()
+
+```cpp
+if (trip->getState() != ASSIGNED) return false;
+```
+
+✔ Prevents invalid transitions
+✔ Enforces state machine
+
+---
+
+## ✅ completeTrip()
+
+* Trip → COMPLETED
+* Driver:
+
+  * Location updated
+  * Availability restored
+
+---
+
+## ❌ cancelTrip()
+
+Handles **two cases**:
+
+1. REQUESTED → simple cancel
+2. ASSIGNED → free driver + rollback record
+
+---
+
+## 🔄 rollbackOperations(int k)
+
+🔥 **ADVANCED FEATURE**
+
+Supports undoing:
+
+* Request
+* Assign
+* Start
+* Complete
+* Cancel
+
+📌 Uses **stack-based rollback**
+📌 Common in databases & transaction systems
+
+---
+
+## 📜 displayTripHistory()
+
+Prints:
+
+* Trip ID
+* State
+* Distance
+
+Useful for debugging & viva demo.
+
+---
+
+## 📊 displayAnalytics()
+
+Calculates:
+
+* Total trips
+* Completed trips
+* Cancelled trips
+* Average distance
+* Driver utilization
+
+💡 Shows **data analysis thinking**.
+
+---
+
+## 🎯 Viva One-Line Summary
+
+> “RideShareSystem is the central controller that manages trip lifecycle, driver dispatching, rollback handling, and analytics by coordinating all other modules in a modular and scalable way.”
+
+---
+
+## 🧠 Common Viva Questions (With Answers)
+
+### Q1: Why use rollback?
+
+**Ans:**
+To revert system state in case of cancellation, errors, or simulations — similar to database transactions.
+
+---
+
+### Q2: Why separate DispatchEngine?
+
+**Ans:**
+To follow **Single Responsibility Principle** and keep driver-selection logic independent.
+
+---
+
+### Q3: What design concepts are used?
+
+**Ans:**
+
+* OOP
+* State Machine
+* Dynamic Memory
+* Modular Design
+* Transaction Rollback
+
+---
+
+### Q4: Can this system scale?
+
+**Ans:**
+Yes. Dynamic arrays, modular components, and separation of concerns allow scalability.
+
+
 
 
 
